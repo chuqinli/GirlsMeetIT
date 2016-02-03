@@ -1,0 +1,97 @@
+.navbar-right{
+	padding-right: 30px;
+}
+.navbar-header{
+	padding-left: 30px;
+}
+.navbar a{
+	color: #ffffff;
+}
+.title{
+	width: 1250px;
+	position: absolute;
+	top: 250px;
+	text-align: center;
+	z-index: 0;
+}
+.title h1{
+	font-size: 650%;
+	color: #ffffff;
+}
+.title h3{
+	font-size: 200%;
+	color:#cccccc;
+}
+
+/* body css*/
+.main .backvideo {
+	padding: 0px;
+}
+
+article .glyphicon {
+	color: #983b59;
+}
+
+#girls{
+	color: #ffb3b3;
+}
+.title p{
+	font-size: 50%;
+	color: #000000;
+}
+.moreinfo{
+	opacity: 0.5;
+	margin-top: 30px;
+	font-weight: bold;
+}
+.collapse{
+	width:100%;
+	text-align:center;
+	color:#ffffff;
+}
+/* waterfall plugin part*/
+#demo {
+	position: relative;
+	max-width: 100%;
+	width: 100%;
+}
+.news img {
+	width: 100%;
+	max-width: 100%;
+	height: auto;
+}
+.white-panel {
+	position: absolute;
+	background: white;
+	box-shadow: 0px 1px 2px rgba(0,0,0,0.3);
+	padding: 10px;
+}
+.white-panel h1 {
+	font-size: 1em;
+}
+.white-panel h1 a {
+	color: #A92733;
+}
+.white-panel:hover {
+	box-shadow: 1px 1px 10px rgba(0,0,0,0.5);
+	margin-top: -5px;
+	-webkit-transition: all 0.3s ease-in-out;
+	-moz-transition: all 0.3s ease-in-out;
+	-o-transition: all 0.3s ease-in-out;
+	transition: all 0.3s ease-in-out;
+}
+
+/* .modal-transparent */
+.modal-transparent {
+  background: transparent;
+}
+.modal-transparent .modal-content {
+  background: transparent;
+}
+.modal-backdrop.modal-backdrop-transparent {
+  background: #ffffff;
+}
+.modal-backdrop.modal-backdrop-transparent.in {
+  opacity: .9;
+  filter: alpha(opacity=90);
+}

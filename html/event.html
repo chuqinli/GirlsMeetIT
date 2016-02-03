@@ -1,0 +1,329 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+	<title>Events Page</title>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<link rel="stylesheet" href="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css">
+	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.4.0/css/font-awesome.min.css">
+	<link href="../css/vendor/calendar.css" rel="stylesheet">
+	<link href="../css/styles.css" rel="stylesheet">
+	<link href="../css/styles/glDatePicker.default.css" rel="stylesheet" type="text/css">
+	<link href="../css/styles/glDatePicker.darkneon.css" rel="stylesheet" type="text/css">
+	<link href="../css/styles/glDatePicker.flatwhite.css" rel="stylesheet" type="text/css">
+	<style>
+		.search {
+			position: relative;
+			padding-top: 10px;
+		}
+
+		.search p {
+			padding-top: 8px;
+		}
+
+		.left-search input {
+			padding-left: 30px;
+		}
+
+		.left-search i {
+			position: absolute;
+			padding: 20px 12px;
+			pointer-events: none;
+		}
+
+		.navbar-right {
+			padding-right: 40px;
+		}
+
+		#googleMap {
+			position: relative;
+			width: 570px;
+			height: 570px;
+			background-color: #222;
+		}
+
+		.filter {
+			position: relative;
+			width: 570px;
+			height: 50px;
+		}
+
+		.check p {
+			padding-top: 10px;
+			color: #003;
+		}
+
+		#slider {
+			width: 235px;
+			padding-top: 5px;
+		}
+
+		.slider {
+			height: 50px;
+		}
+
+		.image .profile-img {
+			height: 200px;
+			width: 200px;
+		}
+
+		.left .card {
+			margin-bottom: 20px;
+		}
+	</style>
+</head>
+
+<body>
+
+	<div class="container" id="nav">
+	<nav class="navbar navbar-default">
+    	<div class="col-md-1 navbar-header">
+	        <a href="#myPage"><img id="icon3" src="../image/icon3.png" style="width:50px;height:50px;"></a>
+	    </div>
+		<div class="col-md-3 search left-search">
+			<i class="glyphicon glyphicon-search" aria-hidden="true"></i>
+			<input type="text" class="form-control" placeholder="Search" />
+		</div>
+		<div class="col-md-4 search">
+			<div class="container">
+				<div class="col-md-2 text-right">
+					<p>Current Location</p>
+				</div>
+				<div class="col-md-2">
+					<input type="text" class="form-control" placeholder="Current location" />
+				</div>
+			</div>
+		</div>
+	    <div class="collapse navbar-collapse" id="myNavbar">
+	        <ul class="nav navbar-nav navbar-right">
+		        <li><a href="../html/home1.html">HOME</a></li>
+		        <li><a href="../html/people.html">WOMEN IN TECH</a></li>
+		        <li><a href="../html/event.html">EVENT</a></li>
+	        </ul>
+    	</div>
+	</nav>
+</div>
+	<div class="container-fluid" id="main">
+		<div class="col-md-6 left">
+			<div class="row filter">
+				<div class="col-md-2 check">
+					<p>Show me</p>
+				</div>
+				<div class="col-md-8">
+					<div class="checkbox">
+						<label>
+							<input type="checkbox" value="">Java
+						</label>
+						<label>
+							<input type="checkbox" value="">UX
+						</label>
+						<label>
+							<input type="checkbox" value="">C++
+						</label>
+						<label>
+							<input type="checkbox" value="">Linux
+						</label>
+						<label>
+							<input type="checkbox" value="">Other
+						</label>
+					</div>
+				</div>
+			</div>
+			<div class="row text-center slider">
+				<div class="col-md-4">
+					Location Range:&nbsp;&nbsp;&nbsp;<b>0 mile</b>
+				</div>
+				<div class="col-md-5">
+					<input id="slider" type="range" value="" data-slider-min="0" data-slider-max="200" />
+				</div>
+				<div class="col-md-3">
+					<b>200 miles</b>
+				</div>
+			</div>
+
+			<div class="output">
+				<input type="text" id="datePicked" />
+			</div>
+			<input type="text" id="datePicked" gldp-id="mydate" />
+			<div gldp-el="mydate" style="width:400px; height:300px; position:absolute; top:70px; left:100px;">
+			</div>
+		</div>
+		<div class="col-md-4 right" id="googleMap"></div>
+		<script>
+			var APIEndpoint = "localhost:8000";
+			var infowindow = null;
+			var map;
+			var res_json;
+			var defaultLat = 38.015481;
+			var defaultLng = -97.581585;
+			var filename_json = "../data/fakeEvent.json";
+			var res_json = null;
+			highDatesObj = [];
+
+			function CenterControl(controlDiv, map) {
+
+				// Set CSS for the control border.
+				var controlUI = document.createElement('div');
+				controlUI.style.backgroundColor = '#fff';
+				controlUI.style.border = '2px solid #fff';
+				controlUI.style.borderRadius = '3px';
+				controlUI.style.boxShadow = '0 2px 6px rgba(0,0,0,.3)';
+				controlUI.style.cursor = 'pointer';
+				controlUI.style.marginBottom = '22px';
+				controlUI.style.textAlign = 'center';
+				controlUI.title = 'Click to recenter the map';
+				controlDiv.appendChild(controlUI);
+
+				// Set CSS for the control interior.
+				var controlText = document.createElement('div');
+				controlText.style.color = 'rgb(25,25,25)';
+				controlText.style.fontFamily = 'Roboto,Arial,sans-serif';
+				controlText.style.fontSize = '16px';
+				controlText.style.lineHeight = '38px';
+				controlText.style.paddingLeft = '5px';
+				controlText.style.paddingRight = '5px';
+				controlText.innerHTML = 'My location';
+				controlUI.appendChild(controlText);
+
+				// Setup the click event listeners: simply set the map to Chicago.
+				controlUI.addEventListener('click', function() {
+					if (navigator.geolocation) {
+						navigator.geolocation.getCurrentPosition(getPosition);
+					}
+				});
+			}
+
+			function getPosition(position) {
+				defaultLat = position.coords.latitude;
+				defaultLng = position.coords.longitude;
+				map.setCenter({
+					lat: defaultLat,
+					lng: defaultLng
+				});
+			}
+
+
+			function initMap() {
+				$.getJSON(filename_json, function(json) {
+					//console.log(json); // this will show the info it in firebug console
+					res_json = json;
+					console.log('json got!\t', res_json);
+
+					if (res_json == null) {
+						console.log('json did NOT get!');
+					};
+
+					for (i = 0; i < res_json.data.length; i++) {
+						var tmp = res_json.data[i];
+						highDatesObj.push({
+							date: new Date(tmp.time * 1000),
+							data: {
+								message: i
+							}
+						});
+						console.log(tmp.time * 1000);
+						console.log(new Date(tmp.time * 1000));
+					}
+					console.log('build dates correct!');
+
+					setMarkers(map);
+
+					$('#datePicked').glDatePicker({
+						showAlways: true,
+						cssName: 'default',
+						borderSize: 3,
+						// todayDate: new Date(),
+						// selectedDate: new Date(2016, 0, 30),
+						specialDates: highDatesObj,
+						onClick: function(target, cell, date, data) {
+							target.val(date.toLocaleDateString());
+							console.log(cell);
+							console.log(date);
+							console.log(data);
+						}
+					});
+
+					console.log('add calendar correct!');
+
+				});
+
+				map = new google.maps.Map(document.getElementById('googleMap'), {
+					zoom: 3,
+					center: {
+						lat: defaultLat,
+						lng: defaultLng
+					}
+				});
+
+				infowindow = new google.maps.InfoWindow({
+					content: "loading...",
+					maxWidth: 400
+				});
+
+
+				var centerControlDiv = document.createElement('div');
+				var centerControl = new CenterControl(centerControlDiv, map);
+
+				centerControlDiv.index = 1;
+				map.controls[google.maps.ControlPosition.TOP_CENTER].push(centerControlDiv);
+			}
+
+			function setMarkers(map) {
+				// Adds markers to the map.
+
+				for (var i = 0; i < res_json.data.length; i++) {
+					var res = res_json.data[i];
+					console.log(i.toString());;
+					console.log(res);
+					console.log(res.location.latitude);
+					console.log(res.location.longitude);
+					var marker = new google.maps.Marker({
+						position: {
+							lat: res.location.latitude,
+							lng: res.location.longitude
+						},
+						map: map,
+						//icon: 'http://chart.apis.google.com/chart?chst=d_map_pin_letter&chld='+
+						//(i+1).toString()  +'A|FF0000|000000',
+						//icon: 'https://raw.githubusercontent.com/Concept211/Google-Maps-Markers/master/images/marker_green' + (i % 100 + 1).toString() + '.png',
+						//shape: shape,
+						label: (i + 1).toString(),
+						title: res.name,
+						//zIndex: res[3],
+						html: '<h2>' + 'Event ' + (i + 1).toString() + ': ' + res.name + '</h2>' + '<div id="bodyContent">' +
+							' <a href=" ' + res.url + ' "> ' + res.url + '</a>' + '<p> ' + res.introduction + ' </p>' + '</div>'
+					});
+
+					google.maps.event.addListener(marker, "click", function() {
+						infowindow.setContent(this.html);
+						infowindow.open(map, this);
+					});
+
+					google.maps.event.addListener(marker, 'mouseover', function() {
+						infowindow.setContent(this.html);
+						infowindow.open(map, this);
+					});
+
+					// google.maps.event.addListener(marker, 'mouseout', function() {
+					// 	infowindow.close();
+					// });
+
+				}
+
+				console.log('added location to map');
+			}
+		</script>
+
+		<script src="https://maps.googleapis.com/maps/api/js?callback=initMap" async defer></script>
+		<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.0/jquery.min.js"></script>
+		<script src="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js"></script>
+		<script src="glDatePicker.min.js"></script>
+		<script type="text/javascript">
+			// get event list
+		</script>
+		<script type="text/javascript" src="https://apis.google.com/js/client.js?onload=handleClientLoad"></script>
+	</div>
+</body>
+
+</html>
