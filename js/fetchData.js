@@ -10,12 +10,10 @@ $(document).ready(function() {
 	});
   $.ajax({
           type: 'GET',
-          url: '../data/facebookOutput.txt',
+          url: 'https://girlsmeetit.herokuapp.com/api/pins',
           dataType:'json',
           success: function(data) {
-						// console.log(data);
-						var pinuserObjects = parseFacebookJSON(data);
-						// console.log(pinuserObjects);
+						var pinuserObjects = parsePinJSON(data.data);
 						for (var i = 0; i < pinuserObjects.length; i++) {
 							createArticle(pinuserObjects[i]);
 						}
@@ -50,11 +48,11 @@ $(document).ready(function() {
 		var pinuserObjects = [];
 		for(var i = 0; i < data.length; i++) {
 			var user = {};
-			user.imgsrc = data[i].imgSrc;
-			user.url = data[i].pinURL;
-			user.title = data[i].title;
+			user.imgsrc = data[i].imageLink;
+			user.url = data[i].pinLink;
+			user.title = data[i].author;
 			user.description = data[i].description;
-			user.likeCount = data[i].likeCount;
+			user.likeCount = data[i].likeCounts;
 			pinuserObjects.push(user);
 		}
 		// console.log(pinuserObjects);
